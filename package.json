@@ -1,0 +1,11 @@
+{
+  "name": "mmo",
+  "description": "A prototype game server/client... or something.",
+  "main": "./lib/mmo",
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "repository" : { "type" : "git", "url" : "http://github.com/brett19/node-mmo.git" },
+  "version": "0.0.1"
+}
