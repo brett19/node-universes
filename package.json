@@ -5,7 +5,8 @@
   "dependencies": {
     "optimist": "~0.6.0",
     "couchbase": "~1.2.0",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "bunyan": "~0.22.1"
   },
   "devDependencies": {},
   "repository": {
