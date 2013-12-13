@@ -1,0 +1,17 @@
+default:
+   mainBucket:
+      server: 'localhost:8091'
+      bucket: 'node-mmo'
+      password: ''
+
+test:
+   mainBucket:
+      server: 'localhost:8091'
+      bucket: 'node-mmo'
+      password: ''
+
+production:
+   mainBucket:
+      server: 'localhost:8091'
+      bucket: 'node-mmo'
+      password: ''
