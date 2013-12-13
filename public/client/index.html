@@ -18,10 +18,14 @@
         }
 
         var primus = Primus.connect('/', { });
+        primus.cmd = function(cmd, args) {
+          this.write([cmd, args]);
+        }
+
         primus.on('open', function open() {
            log('connected');
 
-           primus.write({cmd: 'echo', msg: 'Test Message'});
+           primus.cmd('echo', 'Test Message');
         });
         primus.on('data', function(data) {
            log('data : ', data);
