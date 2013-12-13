@@ -7,7 +7,10 @@
     "couchbase": "~1.2.0",
     "node-uuid": "~1.4.1",
     "bunyan": "~0.22.1",
-    "yaml-config": "~0.3.0"
+    "yaml-config": "~0.3.0",
+    "primus": "~1.5.0",
+    "express": "~3.4.7",
+    "engine.io": "~0.7.12"
   },
   "devDependencies": {},
   "repository": {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Client</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/primus/primus.js"></script>
+    <script type="text/javascript">
+        function log() {
+            for (var i = 0; i < arguments.length; ++i) {
+                if (i > 0) $('#console').append(' ');
+                if (arguments[i] instanceof Object) {
+                    $('#console').append(JSON.stringify(arguments[i]));
+                } else {
+                    $('#console').append(arguments[i]);
+                }
+            }
+            $('#console').append('<br />');
+        }
+
+        var primus = Primus.connect('/', { });
+        primus.on('open', function open() {
+           log('connected');
+
+           primus.write({cmd: 'echo', msg: 'Test Message'});
+        });
+        primus.on('data', function(data) {
+           log('data : ', data);
+        });
+        primus.on('error', function error(err) {
+           log('error : ', err);
+        });
+        primus.on('end', function error() {
+            log('disconnected');
+        });
+    </script>
+</head>
+<body>
+    <div id="console">
+        Test Console<br />
+    </div>
+</body>
+</html>
