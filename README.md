@@ -1,5 +1,5 @@
 # node-mmo
-> Concept MMO project
+> Concept MMO project written in node.js
 
 ## Targets
 * Couchbase
