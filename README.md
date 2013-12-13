@@ -5,7 +5,8 @@
 * Couchbase
 * Autonomous clustering across multiple servers with distributed system handling
 * Player zoning and load balancing
-* REST API for stats, authentication, registration
+* REST API for stats, registration, etc
+* Socket client authentication
 
 ## Zoning Methodologies
 * Open-world - Segmentation and distribution of zones as server node enters the cluster
