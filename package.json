@@ -10,7 +10,8 @@
     "yaml-config": "~0.3.0",
     "primus": "~1.5.0",
     "express": "~3.4.7",
-    "engine.io": "~0.7.12"
+    "engine.io": "~0.7.12",
+    "ntp-client": "~0.5.2"
   },
   "devDependencies": {},
   "repository": {

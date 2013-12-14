@@ -2,13 +2,18 @@
 <html>
 <head>
     <title>Test Client</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="/primus/primus.js"></script>
     <script type="text/javascript">
         function log() {
             for (var i = 0; i < arguments.length; ++i) {
                 if (i > 0) $('#console').append(' ');
-                if (arguments[i] instanceof Object) {
+                if (arguments[i] === null) {
+                    $('#console').append('null');
+                } else if (arguments[i] === undefined) {
+                    $('#console').append('undefined');
+                } else if (arguments[i] instanceof Object) {
                     $('#console').append(JSON.stringify(arguments[i]));
                 } else {
                     $('#console').append(arguments[i]);
@@ -17,30 +22,138 @@
             $('#console').append('<br />');
         }
 
-        var primus = Primus.connect('/', { });
-        primus.cmd = function(cmd, args) {
-          this.write([cmd, args]);
+        var canvas = null;
+
+        function drawDude(info) {
+            canvas.fillStyle = info.color;
+            canvas.fillRect(info.x-10, info.y-10, 20, 20);
+
+            canvas.fillStyle = '#000000';
+            canvas.font = "12px Tahoma";
+            canvas.textAlign = 'center';
+            canvas.fillText(info.name, info.x, info.y-13);
         }
 
-        primus.on('open', function open() {
-           log('connected');
+        var startInfo = window.location.hash.split('#');
+        var myName = startInfo[1];
+        var myColor = '#' + startInfo[2];
+        var myX = parseInt(Math.random() * 400 + 30);
+        var myY = parseInt(Math.random() * 400 + 30);
 
-           primus.cmd('echo', 'Test Message');
-        });
-        primus.on('data', function(data) {
-           log('data : ', data);
-        });
-        primus.on('error', function error(err) {
-           log('error : ', err);
-        });
-        primus.on('end', function error() {
-            log('disconnected');
+        var oPlayers = [];
+
+        function drawMe() {
+            drawDude({
+               name: myName,
+               x: myX,
+               y: myY,
+              color: myColor
+            });
+        }
+
+        function drawAll() {
+            canvas.clearRect(0, 0, 800, 600);
+
+            drawMe();
+
+            for (var i = 0; i < oPlayers.length; ++i) {
+                drawDude(oPlayers[i]);
+            }
+        }
+
+        var primus = null;
+
+        function start() {
+            primus.cmd('join', {
+                name: myName,
+                x: myX,
+                y: myY,
+                color: myColor
+            });
+
+            oPlayers = [];
+
+            drawAll();
+        }
+
+        function moveTo(x, y) {
+            myX = x;
+            myY = y;
+            drawAll();
+
+            primus.cmd('moveTo', {
+                x: x,
+                y: y
+            });
+        }
+
+        function handleCmd(cmd, data) {
+            if (cmd === 'addplayer') {
+                oPlayers.push(data);
+                drawAll();
+            } else if (cmd === 'delplayer') {
+                for (var i = 0; i < oPlayers.length; ++i) {
+                    if (oPlayers[i].uuid === data.uuid) {
+                        oPlayers.splice(i, 1);
+                        break;
+                    }
+                }
+                drawAll();
+            } else if (cmd === 'moveTo') {
+                for (var i = 0; i < oPlayers.length; ++i) {
+                    if (oPlayers[i].uuid == data.uuid) {
+                        oPlayers[i].x = data.x;
+                        oPlayers[i].y = data.y;
+                    }
+                }
+                drawAll();
+            }
+        }
+
+        function startConn() {
+            primus = Primus.connect('/', { });
+            primus.cmd = function(cmd, args) {
+              this.write([cmd, args]);
+            }
+
+            primus.on('open', function open() {
+                log('connected');
+                start();
+            });
+            primus.on('data', function(data) {
+                handleCmd(data[0], data[1]);
+                log('data : ', data);
+            });
+            primus.on('error', function error(err) {
+                log('error : ', err);
+            });
+            primus.on('end', function error() {
+                log('disconnected');
+            });
+        }
+        $(document).ready(function() {
+            canvas = $('#game')[0].getContext("2d");
+
+            $('#game').click(function(e) {
+                var offset = $(this).offset();
+                var clickX = parseInt(e.clientX - offset.left);
+                var clickY = parseInt(e.clientY - offset.top);
+                moveTo(clickX, clickY);
+            });
+
+            startConn();
         });
     </script>
 </head>
 <body>
+    <canvas width="800" height="600" style="border: 1px dashed #252525;" id="game">
+    </canvas>
+
     <div id="console">
         Test Console<br />
     </div>
+
+<img src="powered-by-nodejs.png" width="100" />
+<img src="powered-by-couchbase.png" width="100" />
 </body>
 </html>
