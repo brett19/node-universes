@@ -1,7 +1,7 @@
 {
   "name": "mmo",
   "description": "A prototype game server/client... or something.",
-  "main": "./lib/mmo",
+  "main": "./lib/server",
   "dependencies": {
     "optimist": "~0.6.0",
     "couchbase": "~1.2.0",
