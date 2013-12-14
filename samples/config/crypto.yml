@@ -1,20 +1,44 @@
 default:
-   format: 'base64'
+   format: 'hex'
+
    algorithm: 'aes-128-cbc'
+   iv_size: 16
+   secret_key: 'YourSecretKeyInDevelopment'
+   salt: 'YourSaltInDevelopment'
+   autopadding: true
+   iterations: 65536
+   keylen: 16
+
    signer: 'sha1'
    private_key_file: './samples/keys/private_key.pem'
    public_key_file: './samples/keys/public_key.pub'
 
 test:
-   format: 'base64'
+   format: 'hex'
+
    algorithm: 'aes-128-cbc'
+   iv_size: 16
+   secret_key: 'YourSecretKeyInTest'
+   salt: 'YourSaltInTest'
+   autopadding: true
+   iterations: 65536
+   keylen: 16
+
    signer: 'sha1'
    private_key_file: './samples/keys/private_key.pem'
    public_key_file: './samples/keys/public_key.pub'
 
 production:
-   format: 'base64'
+   format: 'hex'
+
    algorithm: 'aes-128-cbc'
+   iv_size: 16
+   secret_key: 'YourSecretKeyInProduction'
+   salt: 'YourSaltInProduction'
+   autopadding: true
+   iterations: 65536
+   keylen: 16
+
    signer: 'sha1'
    private_key_file: './samples/keys/private_key.pem'
    public_key_file: './samples/keys/public_key.pub'
