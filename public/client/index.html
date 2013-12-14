@@ -140,13 +140,28 @@
                     log('disconnected');
                 });
             }
+
+            // @return event m to callback after threshold seconds of $.mousemove() inactivity
+            function onMouseStop(target, threshold, callback) {
+                var last_move;
+                $(target).mousemove(function(m) {
+                   last_move = new Date().getTime();
+                   var t = setTimeout(function() {
+                      var currentTime = new Date().getTime();
+                      if(currentTime - last_move > threshold) {
+                         callback(m);
+                      }
+                   }, threshold);
+                });
+            }
+
             $(document).ready(function() {
                 canvas = $('#game')[0].getContext("2d");
 
-                $('#game').click(function(e) {
-                    var offset = $(this).offset();
-                    var clickX = parseInt(e.clientX - offset.left);
-                    var clickY = parseInt(e.clientY - offset.top);
+                onMouseStop('#game', 0, function(m) {
+                    var offset = $('#game').offset();
+                    var clickX = parseInt(m.pageX - offset.left);
+                    var clickY = parseInt(m.pageY - offset.top);
                     moveTo(clickX, clickY);
                 });
 
