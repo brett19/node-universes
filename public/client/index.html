@@ -1,159 +1,223 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Test Client</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript" src="/primus/primus.js"></script>
-    <script type="text/javascript">
-        function log() {
-            for (var i = 0; i < arguments.length; ++i) {
-                if (i > 0) $('#console').append(' ');
-                if (arguments[i] === null) {
-                    $('#console').append('null');
-                } else if (arguments[i] === undefined) {
-                    $('#console').append('undefined');
-                } else if (arguments[i] instanceof Object) {
-                    $('#console').append(JSON.stringify(arguments[i]));
-                } else {
-                    $('#console').append(arguments[i]);
-                }
+    <head>
+        <title>Test Client</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="/primus/primus.js"></script>
+        <script type="text/javascript">
+            function timestamp() {
+                var currentdate = new Date(); 
+                return currentdate.getHours() + ":" + currentdate.getMinutes();
             }
-            $('#console').append('<br />');
-        }
 
-        var canvas = null;
+            function log() {
+                for (var i = 0; i < arguments.length; ++i) {
+                    var entry;
 
-        function drawDude(info) {
-            canvas.fillStyle = info.color;
-            canvas.fillRect(info.x-10, info.y-10, 20, 20);
+                    if (i > 0) $('#logs').append(' ');
 
-            canvas.fillStyle = '#000000';
-            canvas.font = "12px Tahoma";
-            canvas.textAlign = 'center';
-            canvas.fillText(info.name, info.x, info.y-13);
-        }
-
-        var startInfo = window.location.hash.split('#');
-        var myName = startInfo[1];
-        var myColor = '#' + startInfo[2];
-        var myX = parseInt(Math.random() * 400 + 30);
-        var myY = parseInt(Math.random() * 400 + 30);
-
-        var oPlayers = [];
-
-        function drawMe() {
-            drawDude({
-               name: myName,
-               x: myX,
-               y: myY,
-              color: myColor
-            });
-        }
-
-        function drawAll() {
-            canvas.clearRect(0, 0, 800, 600);
-
-            drawMe();
-
-            for (var i = 0; i < oPlayers.length; ++i) {
-                drawDude(oPlayers[i]);
-            }
-        }
-
-        var primus = null;
-
-        function start() {
-            primus.cmd('join', {
-                name: myName,
-                x: myX,
-                y: myY,
-                color: myColor
-            });
-
-            oPlayers = [];
-
-            drawAll();
-        }
-
-        function moveTo(x, y) {
-            myX = x;
-            myY = y;
-            drawAll();
-
-            primus.cmd('moveTo', {
-                x: x,
-                y: y
-            });
-        }
-
-        function handleCmd(cmd, data) {
-            if (cmd === 'addplayer') {
-                oPlayers.push(data);
-                drawAll();
-            } else if (cmd === 'delplayer') {
-                for (var i = 0; i < oPlayers.length; ++i) {
-                    if (oPlayers[i].uuid === data.uuid) {
-                        oPlayers.splice(i, 1);
-                        break;
+                    if (arguments[i] === null) {
+                        entry = 'null';
+                    } else if (arguments[i] === undefined) {
+                        entry = 'undefined';
+                    } else if (arguments[i] instanceof Object) {
+                        entry = JSON.stringify(arguments[i], null, 1);
+                    } else {
+                        entry = arguments[i];
                     }
+
+                    $('#logs').append('<li>[' + timestamp() + '] ' + entry);
                 }
-                drawAll();
-            } else if (cmd === 'moveTo') {
+            }
+
+            var canvas = null;
+
+            function drawDude(info) {
+                canvas.fillStyle = info.color;
+                canvas.fillRect(info.x-5, info.y-5, 10, 10);
+
+                canvas.fillStyle = '#000000';
+                canvas.font = "12px Tahoma";
+                canvas.textAlign = 'center';
+                canvas.fillText(info.name, info.x, info.y-13);
+            }
+
+            var startInfo = window.location.hash.split('#');
+            var myName = startInfo[1];
+            var myColor = '#' + startInfo[2];
+            var myX = parseInt(Math.random() * 400 + 30);
+            var myY = parseInt(Math.random() * 400 + 30);
+
+            var oPlayers = [];
+
+            function drawMe() {
+                drawDude({
+                   name: myName,
+                   x: myX,
+                   y: myY,
+                  color: myColor
+                });
+            }
+
+            function drawAll() {
+                canvas.clearRect(0, 0, 1200, 400);
+
+                drawMe();
+
                 for (var i = 0; i < oPlayers.length; ++i) {
-                    if (oPlayers[i].uuid == data.uuid) {
-                        oPlayers[i].x = data.x;
-                        oPlayers[i].y = data.y;
-                    }
+                    drawDude(oPlayers[i]);
                 }
+            }
+
+            var primus = null;
+
+            function start() {
+                primus.cmd('join', {
+                    name: myName,
+                    x: myX,
+                    y: myY,
+                    color: myColor
+                });
+
+                oPlayers = [];
+
                 drawAll();
             }
-        }
 
-        function startConn() {
-            primus = Primus.connect('/', { });
-            primus.cmd = function(cmd, args) {
-              this.write([cmd, args]);
+            function moveTo(x, y) {
+                myX = x;
+                myY = y;
+                drawAll();
+
+                primus.cmd('moveTo', {
+                    x: x,
+                    y: y
+                });
             }
 
-            primus.on('open', function open() {
-                log('connected');
-                start();
-            });
-            primus.on('data', function(data) {
-                handleCmd(data[0], data[1]);
-                log('data : ', data);
-            });
-            primus.on('error', function error(err) {
-                log('error : ', err);
-            });
-            primus.on('end', function error() {
-                log('disconnected');
-            });
-        }
-        $(document).ready(function() {
-            canvas = $('#game')[0].getContext("2d");
+            function handleCmd(cmd, data) {
+                if (cmd === 'addplayer') {
+                    oPlayers.push(data);
+                    drawAll();
+                } else if (cmd === 'delplayer') {
+                    for (var i = 0; i < oPlayers.length; ++i) {
+                        if (oPlayers[i].uuid === data.uuid) {
+                            oPlayers.splice(i, 1);
+                            break;
+                        }
+                    }
+                    drawAll();
+                } else if (cmd === 'moveTo') {
+                    for (var i = 0; i < oPlayers.length; ++i) {
+                        if (oPlayers[i].uuid == data.uuid) {
+                            oPlayers[i].x = data.x;
+                            oPlayers[i].y = data.y;
+                        }
+                    }
+                    drawAll();
+                }
+            }
 
-            $('#game').click(function(e) {
-                var offset = $(this).offset();
-                var clickX = parseInt(e.clientX - offset.left);
-                var clickY = parseInt(e.clientY - offset.top);
-                moveTo(clickX, clickY);
+            function startConn() {
+                primus = Primus.connect('/', { });
+                primus.cmd = function(cmd, args) {
+                  this.write([cmd, args]);
+                }
+
+                primus.on('open', function open() {
+                    log('connected');
+                    start();
+                });
+                primus.on('data', function(data) {
+                    handleCmd(data[0], data[1]);
+                    log('data : ', data);
+                });
+                primus.on('error', function error(err) {
+                    log('error : ', err);
+                });
+                primus.on('end', function error() {
+                    log('disconnected');
+                });
+            }
+            $(document).ready(function() {
+                canvas = $('#game')[0].getContext("2d");
+
+                $('#game').click(function(e) {
+                    var offset = $(this).offset();
+                    var clickX = parseInt(e.clientX - offset.left);
+                    var clickY = parseInt(e.clientY - offset.top);
+                    moveTo(clickX, clickY);
+                });
+
+                startConn();
             });
+        </script>
+    </head>
+    <body>
+        <style>
+            body {
+                margin: 0;
+                padding: 10px;
 
-            startConn();
-        });
-    </script>
-</head>
-<body>
-    <canvas width="800" height="600" style="border: 1px dashed #252525;" id="game">
-    </canvas>
+                font-family: Segoe UI, sans-serif;
+                font-size: 12px;
+            }
+            h3 {
+                margin: 0 0 10px 0;
+                padding: 0;
+            }
+            .container {
+                width: 1200px;
+                margin: 0 auto;
+            }
+            section#world {
 
-    <div id="console">
-        Test Console<br />
-    </div>
+            }
 
-<img src="powered-by-nodejs.png" width="100" />
-<img src="powered-by-couchbase.png" width="100" />
-</body>
+            canvas#game {
+                background: #f5f5f5;
+            }
+
+            section#console {
+                height: 200px;
+                background: #333;
+                color: #fff;
+                padding: 5px;
+
+                overflow: auto;
+                font-size: 11px;
+                line-height: 14px;
+            }
+
+            ul#logs {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            ul#logs li {
+                display: block;
+            }
+
+            footer {
+                clear: both;
+            }
+        </style>
+
+        <div class="container">
+            <section id="world">
+                <canvas width="1200" height="400" id="game"></canvas>
+            </section>
+
+            <section id="console">
+                <ul id="logs"></ul>
+            </section>
+
+            <footer>
+                <img src="powered-by-nodejs.png" width="100" />
+                <img src="powered-by-couchbase.png" width="100" />
+            </footer>
+        </div>
+    </body>
 </html>
