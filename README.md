@@ -7,6 +7,7 @@
 * Player zoning and load balancing
 * REST API for stats, registration, etc
 * Socket client authentication
+* Crypto wrapper
 
 ## Zoning Methodologies
 * Open-world - Segmentation and distribution of zones as server node enters the cluster
