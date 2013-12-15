@@ -1,4 +1,4 @@
-[[logos/universes.png]]
+![Universes](../master/logos/universes.png?raw=true)
 > Concept MMO project written in node.js
 
 ## Targets
