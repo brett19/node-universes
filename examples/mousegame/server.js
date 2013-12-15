@@ -1,8 +1,9 @@
-var argv = require('optimist').argv;
-var log = require('./../../lib/logger');
-var MmoApp = require('./../../lib/app');
-var MmoPrimus = require('./../../lib/primus');
-var MmoRooms = require('./../../lib/rooms');
+var universes = require('../../lib/universes');
+
+var log = universes.logger;
+var UniApp = universes.App;
+var UniPrimus = universes.Primus;
+var UniRooms = universes.Rooms;
 
 var options = {
   couchbase: {
@@ -12,9 +13,9 @@ var options = {
   }
 };
 
-var app = new MmoApp(options);
-var ws = new MmoPrimus(app);
-var rooms = new MmoRooms(app);
+var app = new UniApp(options);
+var ws = new UniPrimus(app);
+var rooms = new UniRooms(app);
 
 app.static('/logos', './logos');
 app.static('/client', __dirname + '/client');
