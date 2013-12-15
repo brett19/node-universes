@@ -1,4 +1,4 @@
-# node-mmo
+[[logos/universes.png]]
 > Concept MMO project written in node.js
 
 ## Targets
