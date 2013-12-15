@@ -1,18 +1,23 @@
 var argv = require('optimist').argv;
-var db = require('./couchbase').mainBucket;
-var log = require('./log');
-var EpicCluster = require('./epiccluster');
-var MmoApp = require('./app');
-var MmoPrimus = require('./primus');
-var MmoRooms = require('./rooms');
+var log = require('./../../lib/logger');
+var MmoApp = require('./../../lib/app');
+var MmoPrimus = require('./../../lib/primus');
+var MmoRooms = require('./../../lib/rooms');
 
-var cluster = new EpicCluster(db);
-var app = new MmoApp(cluster);
+var options = {
+  couchbase: {
+    host: 'localhost:8091',
+    bucket: 'default',
+    password: ''
+  }
+};
+
+var app = new MmoApp(options);
 var ws = new MmoPrimus(app);
 var rooms = new MmoRooms(app);
 
 app.static('/logos', './logos');
-app.static('/client', __dirname + '/../public/client');
+app.static('/client', __dirname + '/client');
 
 app.non('join', function(client, args) {
   client.name = args.name;
@@ -22,11 +27,10 @@ app.non('join', function(client, args) {
 
   var room = rooms.findRoom('main');
   if (!room) {
-    room = rooms.createRoom('main', client);
+    rooms.createRoom('main', client);
   } else {
     room.addClient(client);
   }
-
 
   client.nemit('joined');
 });
