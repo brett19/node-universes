@@ -1,5 +1,5 @@
 ![Universes](../master/logos/universes.png?raw=true)
-> Concept MMO project written in node.js
+> Game Server development framework written in Node.js
 
 ## Targets
 * Couchbase
@@ -20,4 +20,3 @@
 * World - Splitting users based on automatically distributed regions of one
   massive world.  Players still only receive event notifications that are
   specific to them.
-
