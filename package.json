@@ -1,6 +1,6 @@
 {
-  "name": "mmo",
-  "description": "A prototype game server/client... or something.",
+  "name": "universes",
+  "description": "Game Server development framework written in Node.js.",
   "main": "./lib/universes",
   "dependencies": {
     "optimist": "~0.6.0",
