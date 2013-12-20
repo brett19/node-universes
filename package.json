@@ -1,7 +1,7 @@
 {
   "name": "mmo",
   "description": "A prototype game server/client... or something.",
-  "main": "./lib/server",
+  "main": "./lib/universes",
   "dependencies": {
     "optimist": "~0.6.0",
     "couchbase": "~1.2.0",
@@ -16,7 +16,7 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "http://github.com/brett19/node-mmo.git"
+    "url": "http://github.com/brett19/node-universes.git"
   },
   "version": "0.0.1"
 }
