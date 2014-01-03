@@ -1,5 +1,6 @@
 require('../../lib/universes')({
   workers: 2,
+  httpPort: 8080,
   couchbase: {
     host: 'localhost:8091',
     bucket: 'default',
